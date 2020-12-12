@@ -1,5 +1,5 @@
-# VariantSync
-=== Automating the Synchronization of Software Variants ===
+# VariantSync  [![Build Status](https://travis-ci.org/tcerny/VariantSync.svg?branch=seproj_ulm_2020)](https://travis-ci.org/tcerny/VariantSync)
+=== Automating the Synchronization of Software Variants ===  
 
 VariantSync is a tool to develop variants separately as in clone-and-own and to automate change propagation by using domain knowledge of developers. VariantSync detects and logs changes during development, tags these changes to feature expressions and automates the synchronization
 of changes between variants. As a side effect, using VariantSync for a while may increase the feature-to-code map-ping and, thus, ease a potential later migration to a product line. VariantSync is an open-source Eclipse plug-in distributed under L-GPL.
