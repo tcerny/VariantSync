@@ -1,6 +1,6 @@
 package de.variantsync.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +13,9 @@ import de.variantsync.core.ast.LineGrammar;
 import org.junit.Before;
 import org.junit.Test;
 
+//TODO. Add compare method to AST and then compare ASTs with this methods.
+
+
 public class JsonParserTestASTwithLineGrammar {
 
 	AST<LineGrammar, String> exampleAst;
@@ -24,10 +27,10 @@ public class JsonParserTestASTwithLineGrammar {
 		exampleAst = new AST<>(LineGrammar.Directory, "src");
 		AST<LineGrammar, String> mainJava = new AST<>(LineGrammar.TextFile, "Main.java");
 		exampleAst.addChild(mainJava);
-		mainJava.addChildren(
-				Arrays.asList(new AST<>(LineGrammar.Line, "public class Main {"), new AST<>(LineGrammar.Line, "    public static void main(String[] args)"),
-						new AST<>(LineGrammar.Line, "        System.out.println(\"Hello World\");"), new AST<>(LineGrammar.Line, "    }"),
-						new AST<>(LineGrammar.Line, "}")));
+		mainJava.addChildren(Arrays.asList(new AST<>(LineGrammar.Line, "public class Main {"),
+				new AST<>(LineGrammar.Line, "    public static void main(String[] args)"),
+				new AST<>(LineGrammar.Line, "        System.out.println(\"Hello World\");"),
+				new AST<>(LineGrammar.Line, "    }"), new AST<>(LineGrammar.Line, "}")));
 
 		exmaplePath = Path.of("out.txt");
 
@@ -37,21 +40,21 @@ public class JsonParserTestASTwithLineGrammar {
 	public void TestJsonParserAST() {
 
 		// export to json
-		String json = JsonParserASTwithLineGrammar.exportAST(exampleAst);
+		String json = JsonParserASTwithLineGrammar.toJson(exampleAst);
 
 		// import ast from json
-		AST<LineGrammar, String> ast = JsonParserASTwithLineGrammar.importAST(json);
+		AST<LineGrammar, String> importAST = JsonParserASTwithLineGrammar.toAST(json);
 
-		// rexport imported AST
-		String jsonSec = JsonParserASTwithLineGrammar.exportAST(ast);
+		// toJson imported AST
+		String importedJson = JsonParserASTwithLineGrammar.toJson(importAST);
 
 		// print
-		System.out.println("First:" + json);
+		System.out.println("FileFirst:" + json);
 
-		System.out.println("Second:" + jsonSec);
+		System.out.println("FileSecond:" + importedJson);
 
 		// compare json
-		assertTrue(json.equals(jsonSec));
+		assertEquals(json, importedJson);
 
 	}
 
@@ -59,21 +62,21 @@ public class JsonParserTestASTwithLineGrammar {
 	public void TestJsonParserASTtoFile() throws IOException {
 
 		// export to json file
-		String json = JsonParserASTwithLineGrammar.exportToFile(exmaplePath, exampleAst);
+		String json = JsonParserASTwithLineGrammar.exportAST(exmaplePath, exampleAst);
 
 		// import ast from file
-		AST<LineGrammar, String> ast = JsonParserASTwithLineGrammar.importFromFile(exmaplePath);
+		AST<LineGrammar, String> importedAST = JsonParserASTwithLineGrammar.importAST(exmaplePath);
 
-		// rexport imported AST
-		String jsonSec = JsonParserASTwithLineGrammar.exportAST(ast);
+		// toJson imported AST
+		String importedJson = JsonParserASTwithLineGrammar.toJson(importedAST);
 
 		// print
 		System.out.println("FileFirst:" + json);
 
-		System.out.println("FileSecond:" + jsonSec);
+		System.out.println("FileSecond:" + importedJson);
 
 		// compare json
-		assertTrue(json.equals(jsonSec));
+		assertEquals(json, importedJson);
 
 		// delete created file
 		Files.delete(exmaplePath);
@@ -83,22 +86,22 @@ public class JsonParserTestASTwithLineGrammar {
 	public void TestJsonParserASTtoFileToString() throws IOException {
 
 		// export to json file
-		JsonParserASTwithLineGrammar.exportToFile(exmaplePath, exampleAst);
+		JsonParserASTwithLineGrammar.exportAST(exmaplePath, exampleAst);
 
 		// import ast from file
-		AST<LineGrammar, String> ast = JsonParserASTwithLineGrammar.importFromFile(exmaplePath);
+		AST<LineGrammar, String> importedAST = JsonParserASTwithLineGrammar.importAST(exmaplePath);
 
 		// get toString
-		String json = exampleAst.toString();
-		String jsonSec = ast.toString();
+		String astString = exampleAst.toString();
+		String importedString = importedAST.toString();
 
 		// print
-		System.out.println("FileFirst:" + json);
+		System.out.println("FileFirst:" + astString);
 
-		System.out.println("FileSecond:" + jsonSec);
+		System.out.println("FileSecond:" + importedString);
 
 		// compare json
-		assertTrue(json.equals(jsonSec));
+		assertEquals(astString, importedString);
 
 		// delete created file
 		Files.delete(exmaplePath);
