@@ -12,11 +12,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * 
- * Uses gson to import and export ASTs to and from json. A generic use of
- * grammar is not possible, hence for each grammar a different class has to be
- * created. In this case the used grammar is LineGrammar.
- * 
+ *
+ * Uses gson to import and export ASTs to and from json. A generic use of grammar is not possible, hence for each grammar a different class has to be created.
+ * In this case the used grammar is LineGrammar.
+ *
  * @author Jeremia Heinle
  *
  */
@@ -25,6 +24,7 @@ public class JsonParserASTwithLineGrammar {
 	// json parser uses a custom policy to define the name of the field
 	// inside of the json
 	static FieldNamingStrategy customPolicy = new FieldNamingStrategy() {
+
 		@Override
 		public String translateName(Field f) {
 
@@ -40,31 +40,28 @@ public class JsonParserASTwithLineGrammar {
 
 	};
 
-	static Gson prettyStringGsonBuilder = new GsonBuilder().setPrettyPrinting().setFieldNamingStrategy(customPolicy)
-			.create();
+	static Gson prettyStringGsonBuilder = new GsonBuilder().setPrettyPrinting().setFieldNamingStrategy(customPolicy).create();
 
-	public static String toJson(AST<LineGrammar, String> ast) {
+	public static <B> String toJson(AST<LineGrammar, B> ast) {
 
-		Type type = new TypeToken<AST<LineGrammar, String>>() {
-		}.getType();
+		final Type type = new TypeToken<AST<LineGrammar, String>>() {}.getType();
 
 		return prettyStringGsonBuilder.toJson(ast, type);
 	}
 
-	public static AST<LineGrammar, String> toAST(String json) {
+	public static <B> AST<LineGrammar, B> toAST(String json) {
 
-		Type type = new TypeToken<AST<LineGrammar, String>>() {
-		}.getType();
+		final Type type = new TypeToken<AST<LineGrammar, String>>() {}.getType();
 
 		return prettyStringGsonBuilder.fromJson(json, type);
 	}
 
-	public static String exportAST(Path path, AST<LineGrammar, String> ast) {
+	public static <B> String exportAST(Path path, AST<LineGrammar, B> ast) {
 
-		String content = toJson(ast);
+		final String content = toJson(ast);
 		try {
 			Files.writeString(path, content);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -72,12 +69,12 @@ public class JsonParserASTwithLineGrammar {
 		return content;
 	}
 
-	public static AST<LineGrammar, String> importAST(Path path) {
+	public static <B> AST<LineGrammar, B> importAST(Path path) {
 
 		String json = "";
 		try {
 			json = Files.readString(path);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return null;
 		}
