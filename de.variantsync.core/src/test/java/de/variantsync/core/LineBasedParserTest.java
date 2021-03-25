@@ -1,5 +1,7 @@
 package de.variantsync.core;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +39,7 @@ public class LineBasedParserTest {
 		final AST<LineGrammar, String> mainJava = new AST<>(LineGrammar.TextFile, "Main.java");
 		mainDir.addChild(mainJava);
 		mainJava.addChildren(
-				Arrays.asList(new AST<>(LineGrammar.Line, "public class Main {"), new AST<>(LineGrammar.Line, "    public static void main(String[] args)"),
+				Arrays.asList(new AST<>(LineGrammar.Line, "public class Main {"), new AST<>(LineGrammar.Line, "    public static void main(String[] args) {"),
 						new AST<>(LineGrammar.Line, "        System.out.println(\"Hello World\");"), new AST<>(LineGrammar.Line, "    }"),
 						new AST<>(LineGrammar.Line, "}")));
 	}
@@ -49,7 +51,7 @@ public class LineBasedParserTest {
 		final Path testDir = Files.createDirectory(Paths.get(src + File.separator + "test"));
 		final Path mainFile = Files.createFile(Paths.get(mainDir + File.separator + "Main.java"));
 		final String fileContent =
-			String.format("public class Main {%n    public static void main(String[] args)%n        System.out.println(\"Hello World\");%n    }%n}");
+			String.format("public class Main {%n    public static void main(String[] args) {%n        System.out.println(\"Hello World\");%n    }%n}");
 		Files.writeString(mainFile, fileContent);
 
 		final Path binFile = Files.createFile(Paths.get(mainDir + File.separator + "BinaryFile"));
@@ -59,10 +61,17 @@ public class LineBasedParserTest {
 		final LineBasedParser parser = new LineBasedParser();
 		final AST<LineGrammar, String> parsedAST = parser.parseDirectory(src);
 
-		// Testing only the equality of the toString() methods at the moment
+		// Testing only the equality of the printTree() methods at the moment (without the uuid's which can't be the same since the trees to compare are two
+		// different trees)
+		//
 		// waiting for equals() method for AST for comparison of the real AST-Objects
-		// TODO: FIX THIS
-		// assertEquals(parsedAST.toString(), srcDir.toString());
+		assertEquals(printTreeWithoutUUID(parsedAST.printTree()), printTreeWithoutUUID(srcDir.printTree()));
+	}
+
+	private String printTreeWithoutUUID(String tree) {
+		// uuidRegex finds the occurences of the uuid's in each line
+		final String uuidRegex = " uuid: -?\\d+";
+		return tree.replaceAll(uuidRegex, "");
 	}
 
 }
